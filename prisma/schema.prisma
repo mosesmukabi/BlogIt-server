@@ -35,4 +35,6 @@ model Blog {
 
    user user @relation(fields: [owner], references: [id] )
 
+   @@map("blogs")
+
 }

@@ -43,3 +43,18 @@ export  async  function fetchSingleBlog(req, res) {
     }
 }
 
+
+export  async function fetchAllBlogs(req, res) {
+    try{
+        const blogs = await prisma.blog.findMany({
+            include:{
+                user: true
+            }
+
+        })
+
+        res.status(200).json(blogs);
+    } catch (error) {
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+}

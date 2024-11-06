@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import { createUser } from './controllers/user.js';
 import { loginUser } from './controllers/auth.js';
 import validateUser from './middleware/validateUser.js';
-import { createBlog, fetchSingleBlog } from './controllers/blogs.js';
+import { createBlog, fetchSingleBlog, fetchAllBlogs } from './controllers/blogs.js';
 import verifyToken from './middleware/verifyToken.js';
 
 const app = express();
@@ -25,6 +25,8 @@ app.post('/auth/login', loginUser);
 app.post('/blogs', verifyToken, createBlog);
 
 app.get('/blogs/:id',  fetchSingleBlog);
+
+app.get('/blogs', verifyToken, fetchAllBlogs);
 
 app.listen(5000, () => {
   console.log('Server is running on port 5000'); 

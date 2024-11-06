@@ -58,3 +58,19 @@ export  async function fetchAllBlogs(req, res) {
       res.status(500).json({ message: 'Something went wrong' });
     }
 }
+
+export async function getUserBlogs(req, res) {
+
+    try{
+        const userId = req.userId;
+        const blogs = await prisma.blog.findMany({
+            where: {
+                owner: userId
+            }
+        })
+
+        res.status(200).json(blogs); 
+    } catch(error) { 
+        res.status(400).json({ message: 'Something went wrong' });       
+    }
+} 

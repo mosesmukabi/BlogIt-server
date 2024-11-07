@@ -74,3 +74,49 @@ export async function getUserBlogs(req, res) {
         res.status(400).json({ message: 'Something went wrong' });       
     }
 } 
+
+
+export async function deleteBlog(req, res) {
+    try {
+      const { blogId } =  req.params
+      const { userId } = req.userId;
+
+       await prisma.blog.delete({
+        where: {
+            id: blogId,
+            owner: userId
+
+        }
+          
+      })
+       res.status(200).json({message: 'Blog deleted successfully'});
+    }
+    catch(error) {
+        res.status(500).json({ message: 'Something went wrong' });       
+    }
+}
+
+
+export async function updateBlog(req, res) {
+    try{
+        const { title, excerpt, body, featuredImage } = req.body;
+        const { blogId } = req.params;
+        const { userId } = req.userId;
+        await prisma.blog.update({
+            where: {
+                id : blogId,
+                owner: userId
+            },
+            data: {
+                title,
+                excerpt,
+                body,
+                featuredImage
+            }
+
+        })
+        res.status(200).json({message: 'Blog updated successfully'});
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+}

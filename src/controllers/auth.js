@@ -29,3 +29,36 @@ export const loginUser = async (req, res) => {
       res.status(500).json({ message: 'Something went wrong' });
     }
   }
+
+
+
+  export async function updatePassword(req, res) {
+    try {
+      const userId = req.userId;
+      const { oldPassword, newPassword } = req.body;
+
+      const user = await client.user.findFirst({ where: { id: userId } });
+
+      if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+      }
+
+    const theyMatch =  await bcrypt.compare(oldPassword, user.password);
+    if (theyMatch) {
+      const hashedPassword = await bcrypt.hash(newPassword, 8);
+      const updated = await client.user.update({
+        where: { id: userId },
+        data: {
+          password: hashedPassword
+        },
+      })
+      res.status(200).json({message: 'Password updated successfully'});
+    }
+
+      
+  } catch (error) {
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  }
+

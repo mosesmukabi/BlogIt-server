@@ -120,3 +120,73 @@ export async function updateBlog(req, res) {
         res.status(500).json({ message: 'Something went wrong' });
     }
 }
+
+export async function updatePersonalInfo(req, res) {
+    try {
+      const { firstName, lastName, email, username } = req.body;
+      const userId = req.userId;
+  
+      // Check if the email already exists (excluding current user)
+      const emailExists = await prisma.user.findFirst({
+        where: {
+          email,
+          id: { not: userId },
+        },
+      });
+      if (emailExists) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
+  
+      // Check if the username already exists (excluding current user)
+      const usernameExists = await prisma.user.findFirst({
+        where: {
+          userName: username,
+          id: { not: userId },
+        },
+      });
+      if (usernameExists) {
+        return res.status(400).json({ message: 'Username already exists' });
+      }
+  
+      // Perform the update
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          firstName,
+          lastName,
+          email,
+          userName: username,
+        },
+      });
+  
+      res.status(200).json({ message: 'Personal info updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  }
+  
+
+
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: {
+        firstName: true,
+        lastName: true,
+        email: true,
+        userName: true, // Matches your schema as `userName`
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user profile' });
+  }
+};
